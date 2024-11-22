@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    
+    <data>
+        <variable
+            name="viewModel"
+            type="com.mck.contacts.ui.add.AddContactViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- Profile Picture -->
+
+        <!-- Up Button -->
+
+        <ImageView
+            android:id="@+id/picture_frame"
+            android:layout_width="409dp"
+            android:layout_height="452dp"
+            android:contentDescription="Profile Picture"
+
+            app:imageUri="@={viewModel.newContactPicture}"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Save Button -->
+        <Button
+            android:id="@+id/save_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Save"
+            android:onClick="@{() -> viewModel.onSaveClick()}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- LinearLayout for EditText fields -->
+        <LinearLayout
+            android:id="@+id/contact_fields_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/picture_frame">
+
+            <!-- Name Field -->
+            <EditText
+                android:id="@+id/name_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="32sp"
+                android:hint="Name"
+                android:inputType="textPersonName"
+                android:text="@={viewModel.newContactName}" />
+
+            <!-- Phone Number Field -->
+            <EditText
+                android:id="@+id/phone_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="32sp"
+                android:hint="Phone Number"
+                android:inputType="phone"
+                android:text="@={viewModel.newContactNumber}" />
+
+            <!-- Email Field -->
+            <EditText
+                android:id="@+id/email_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="32sp"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:text="@={viewModel.newContactEmail}" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/add_picture_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Picture"
+            android:onClick="@{() -> viewModel.onAddPictureClick()}"
+            app:layout_constraintBottom_toTopOf="@+id/contact_fields_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/picture_frame" />
+
+        <Button
+            android:id="@+id/back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Back"
+            android:onClick="@{() -> viewModel.onBackClick()}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

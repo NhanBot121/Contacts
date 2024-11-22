@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.mck.contacts.ui.info.ContactInfoViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <!-- Profile Picture -->
+
+        <!-- Up Button -->
+
+        <ImageView
+            android:id="@+id/picture_info"
+            android:layout_width="414dp"
+            android:layout_height="465dp"
+            android:contentDescription="Profile Picture"
+
+            app:imageUri="@{viewModel.contact.picture}"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.454"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Save Button -->
+        <Button
+            android:id="@+id/edit_button_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Edit"
+            android:onClick="@{() -> viewModel.onEditClick()}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- LinearLayout for EditText fields -->
+        <LinearLayout
+            android:id="@+id/contact_fields_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/picture_info">
+
+            <!-- Name Field -->
+            <TextView
+                android:id="@+id/name_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.contact.name}"
+                android:textSize="32sp" />
+
+            <!-- Phone Number Field -->
+            <TextView
+                android:id="@+id/phone_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.contact.number}"
+                android:textSize="32sp" />
+
+            <!-- Email Field -->
+            <TextView
+                android:id="@+id/email_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.contact.email}"
+                android:textSize="32sp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Back"
+            android:onClick="@{() -> viewModel.onBackClick()}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/call_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->viewModel.onCallClick()}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/picture_info"
+            app:srcCompat="@android:drawable/sym_call_outgoing" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

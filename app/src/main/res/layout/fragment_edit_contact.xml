@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.mck.contacts.ui.edit.EditContactViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- Profile Picture -->
+
+        <!-- Up Button -->
+
+        <ImageView
+            android:id="@+id/picture_frame_edit"
+            android:layout_width="409dp"
+            android:layout_height="452dp"
+            android:contentDescription="Profile Picture"
+
+            app:imageUri="@={viewModel.contact.picture}"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Save Button -->
+        <Button
+            android:id="@+id/save_button_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:onClick="@{() -> viewModel.onSaveClick()}"
+            android:text="Save"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- LinearLayout for EditText fields -->
+        <LinearLayout
+            android:id="@+id/contact_fields_edit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/picture_frame_edit">
+
+            <!-- Name Field -->
+            <EditText
+                android:id="@+id/name_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Name"
+                android:inputType="textPersonName"
+                android:textSize="32sp"
+                android:onTextChanged="@{()->viewModel.validateInputs()}"
+                android:text="@={viewModel.contact.name}" />
+
+            <!-- Phone Number Field -->
+            <EditText
+                android:id="@+id/phone_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="32sp"
+                android:hint="Phone Number"
+                android:inputType="phone"
+                android:onTextChanged="@{()->viewModel.validateInputs()}"
+                android:text="@={viewModel.contact.number}" />
+
+            <!-- Email Field -->
+            <EditText
+                android:id="@+id/email_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Email"
+                android:textSize="32sp"
+                android:inputType="textEmailAddress"
+                android:onTextChanged="@{()->viewModel.validateInputs()}"
+                android:text="@={viewModel.contact.email}" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/update_picture_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Update Picture"
+            android:onClick="@{() -> viewModel.onUpdatePictureClick()}"
+            app:layout_constraintBottom_toTopOf="@+id/contact_fields_edit"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/picture_frame_edit" />
+
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Cancel"
+            android:onClick="@{() -> viewModel.onCancelClick()}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/delete_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> viewModel.onDeleteClick()}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/contact_fields_edit"
+            app:srcCompat="@android:drawable/ic_menu_delete" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
