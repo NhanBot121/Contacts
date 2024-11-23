@@ -22,8 +22,8 @@ interface ContactDao  {
     @Query("SELECT * FROM contact_table WHERE id = :key")
     fun get(key: Long): LiveData<Contact>
 
-    @Query("SELECT * FROM contact_table WHERE name = :key")
-    fun search(key: String): LiveData<Contact>
+    @Query("SELECT * FROM contact_table WHERE name LIKE :key ORDER BY name ASC")
+    fun search(key: String): LiveData<List<Contact>>
 
     @Query("SELECT * FROM contact_table ORDER BY name ASC")
     fun getAll(): LiveData<List<Contact>>

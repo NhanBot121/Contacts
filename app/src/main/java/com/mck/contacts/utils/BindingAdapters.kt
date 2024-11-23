@@ -1,6 +1,5 @@
 package com.mck.contacts.utils
 
-
 import android.net.Uri
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
@@ -35,7 +34,6 @@ fun setImageUri(view: ImageView, imageUri: String?) {
         view.setImageResource(R.drawable.avatar_placeholder)
     }
 }
-
 
 // Retrieve the image URI from the ImageView
 @InverseBindingAdapter(attribute = "imageUri")

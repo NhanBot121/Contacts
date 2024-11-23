@@ -14,12 +14,12 @@
             android:id="@+id/action_contactFragment_to_addContactFragment"
             app:destination="@id/addContactFragment"
             app:popUpTo="@id/contactFragment"
-            app:popUpToInclusive="true" />
+            app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_contactFragment_to_contactInfoFragment"
             app:destination="@id/contactInfoFragment"
             app:popUpTo="@id/contactFragment"
-            app:popUpToInclusive="true" />
+            app:popUpToInclusive="false" />
     </fragment>
     <fragment
         android:id="@+id/addContactFragment"
@@ -28,7 +28,9 @@
         tools:layout="@layout/fragment_add_contact" >
         <action
             android:id="@+id/action_addContactFragment_to_contactFragment"
-            app:destination="@id/contactFragment" />
+            app:destination="@id/contactFragment"
+            app:popUpTo="@id/contactFragment"
+            app:popUpToInclusive="false" />
     </fragment>
     <fragment
         android:id="@+id/contactInfoFragment"
@@ -54,9 +56,11 @@
             app:argType="long" />
         <action
             android:id="@+id/action_editContactFragment_to_contactInfoFragment"
-            app:destination="@id/contactInfoFragment" />
+            app:destination="@id/contactInfoFragment"
+            app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_editContactFragment_to_contactFragment"
-            app:destination="@id/contactFragment" />
+            app:destination="@id/contactFragment"
+            app:popUpToInclusive="false" />
     </fragment>
 </navigation>

@@ -2,9 +2,16 @@ package com.mck.contacts.ui.contacts
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -13,63 +20,111 @@ import com.mck.contacts.databinding.FragmentContactBinding
 import com.mck.contacts.model.ContactDatabase
 
 class ContactsFragment : Fragment() {
-    var _binding : FragmentContactBinding? = null
-    val binding get() = _binding!!
+    private var _binding: FragmentContactBinding? = null
+    private val binding get() = _binding!!
+
+    private lateinit var viewModel: ContactsViewModel
+    private lateinit var adapter: ContactItemAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentContactBinding.inflate(inflater, container, false)
-        val view = binding.root
 
+        setupViewModel()
+        setupRecyclerView()
+        setupAddContactButton()
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Set the toolbar as the ActionBar
+        val toolbar = binding.contactToolbar
+        (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
+
+        setupObservers()
+        setupMenu()
+    }
+
+    private fun setupViewModel() {
         val application = requireNotNull(this.activity).application
         val dao = ContactDatabase.getInstance(application).contactDao
-
         val viewModelFactory = ContactsViewModelFactory(dao)
-        val viewModel = ViewModelProvider(
-            this, viewModelFactory
-        )[ContactsViewModel::class.java]
+        viewModel = ViewModelProvider(this, viewModelFactory)[ContactsViewModel::class.java]
+    }
 
-        // Set up the toolbar
-        val toolbar = binding.contactToolbar
-        toolbar.setSubtitle("Contacts")
-        toolbar.inflateMenu(R.menu.contact_toolbar_menu)
+    private fun setupRecyclerView() {
+        adapter = ContactItemAdapter { contactId ->
+            viewModel.onContactClicked(contactId)
+        }
+        binding.contactList.adapter = adapter
+    }
 
+    private fun setupObservers() {
+        // Observe all contacts
+        viewModel.contacts.observe(viewLifecycleOwner) { contacts ->
+            contacts?.let { adapter.contacts = it }
+        }
 
-        // The add contact button
+        // Observe search results
+        viewModel.searchResults.observe(viewLifecycleOwner) { results ->
+            results?.let { adapter.contacts = it }
+        }
+
+        // Observe navigation to contact info
+        viewModel.navigateToContact.observe(viewLifecycleOwner) { contactId ->
+            contactId?.let {
+                navigateToContactInfo(it)
+                viewModel.onContactNavigated()
+            }
+        }
+    }
+
+    private fun setupMenu() {
+        requireActivity().addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.contact_toolbar_menu, menu)
+
+                val searchItem = menu.findItem(R.id.action_search)
+                val searchView = searchItem.actionView as SearchView
+
+                searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                    override fun onQueryTextSubmit(query: String?): Boolean {
+                        query?.let { viewModel.searchContacts(it) }
+                        return true
+                    }
+
+                    override fun onQueryTextChange(newText: String?): Boolean {
+                        newText?.let { viewModel.searchContacts(it) }
+                        return true
+                    }
+                })
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                // Handle menu item clicks if needed
+                return false
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+    private fun setupAddContactButton() {
         binding.addFab.setOnClickListener {
             findNavController().navigate(R.id.action_contactFragment_to_addContactFragment)
         }
-
-        // contact item adapter
-        val adapter =
-            ContactItemAdapter { contactId -> viewModel.onContactClicked(contactId) } // the onBind() in adapter gives you the desired contactId
-
-        // recylcer view
-        binding.contactList.adapter = adapter
-        //
-        viewModel.contacts.observe(viewLifecycleOwner, Observer {
-            it?.let {
-                adapter.contacts = it
-            }
-        })
-
-        viewModel.navigateToContact.observe(viewLifecycleOwner, Observer { contactId ->
-            contactId?.let {
-                val action = ContactsFragmentDirections
-                    .actionContactFragmentToContactInfoFragment(contactId)
-                this.findNavController().navigate(action)
-                viewModel.onContactNavigated()
-            }
-        })
-
-        return view
     }
 
-    override fun onDestroy() {
+    private fun navigateToContactInfo(contactId: Long) {
+        val action = ContactsFragmentDirections.actionContactFragmentToContactInfoFragment(contactId)
+        findNavController().navigate(action)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
-        super.onDestroy()
     }
-
 }

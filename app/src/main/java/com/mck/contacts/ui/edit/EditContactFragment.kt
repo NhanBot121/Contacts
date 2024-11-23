@@ -34,7 +34,6 @@ class EditContactFragment : Fragment() {
         if (uri != null) {
             viewModel.contact.value?.picture = viewModel.saveImageToInternalStorage(requireContext(), uri)
         }
-
     }
 
     override fun onCreateView(
@@ -82,10 +81,7 @@ class EditContactFragment : Fragment() {
             }
         }
 
-
         // Observe input validity
-        viewModel.validateInputs()
-
         viewModel.isInputValid.observe(viewLifecycleOwner) { isValid ->
             binding.saveButtonEdit.isEnabled = isValid
         }
