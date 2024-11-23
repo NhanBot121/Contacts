@@ -12,12 +12,14 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.mck.contacts.R
 import com.mck.contacts.databinding.FragmentEditContactBinding
 import com.mck.contacts.model.ContactDatabase
 import com.mck.contacts.ui.add.AddContactViewModel
 import com.mck.contacts.ui.add.AddContactViewModelFactory
+import kotlinx.coroutines.launch
 import kotlin.getValue
 
 class EditContactFragment : Fragment() {
@@ -25,14 +27,17 @@ class EditContactFragment : Fragment() {
     var _binding: FragmentEditContactBinding? = null
     val binding get() = _binding!!
 
-    private lateinit var viewModel: EditContactViewModel
+    private lateinit var viewModel : EditContactViewModel
 
     // ActivityResultLauncher for selecting an image
     val pickImageLauncher = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
-            viewModel.contact.value?.picture = viewModel.saveImageToInternalStorage(requireContext(), uri)
+            viewModel.viewModelScope.launch {
+                val savedImagePath = viewModel.saveImageToInternalStorage(requireContext(), uri)
+                viewModel.updateContactPicture(savedImagePath)
+            }
         }
     }
 
@@ -40,36 +45,43 @@ class EditContactFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        _binding = FragmentEditContactBinding.inflate(inflater, container, false)
 
         // Safely retrieve arguments
         val contactId = EditContactFragmentArgs.fromBundle(requireArguments()).contactId
-
         // Initialize ViewModel after arguments are available
         val dao = ContactDatabase.getInstance(requireActivity().application).contactDao
         val viewModelFactory = EditContactViewModelFactory(contactId, dao)
         viewModel = ViewModelProvider(this, viewModelFactory)[EditContactViewModel::class.java]
 
-        // get ref
-        binding.viewModel = viewModel
-        binding.lifecycleOwner = viewLifecycleOwner //for data binding
+        // Inflate the layout for this fragment
+        _binding = FragmentEditContactBinding.inflate(inflater, container, false).apply {
+            viewModel = this@EditContactFragment.viewModel
+            lifecycleOwner = viewLifecycleOwner
+        }
 
+        setUpObservers(contactId)
+
+        return binding.root
+
+    }
+
+
+
+    private fun setUpObservers(contactId: Long) {
         // Save button
-        viewModel.navigateToContact.observe(viewLifecycleOwner) { navigate ->
+        viewModel.navigateToInfo.observe(viewLifecycleOwner) { navigate ->
             if (navigate) {
                 val action = EditContactFragmentDirections.actionEditContactFragmentToContactInfoFragment(contactId)
                 findNavController().navigate(action)
-
-                viewModel.onNavigatedToContact()
+                viewModel.onNavigatedToInfo()
             }
         }
 
         // Delete
-        viewModel.navigateToList.observe(viewLifecycleOwner) { navigate ->
+        viewModel.navigateToContacts.observe(viewLifecycleOwner) { navigate ->
             if (navigate) {
                 findNavController().navigate(R.id.action_editContactFragment_to_contactFragment)
-                viewModel.onNavigatedToList()
+                viewModel.onNavigatedToContacts()
             }
         }
 
@@ -85,8 +97,5 @@ class EditContactFragment : Fragment() {
         viewModel.isInputValid.observe(viewLifecycleOwner) { isValid ->
             binding.saveButtonEdit.isEnabled = isValid
         }
-
-
-        return binding.root
     }
 }

@@ -1,7 +1,6 @@
 package com.mck.contacts.ui.info
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -21,13 +20,16 @@ class ContactInfoFragment : Fragment() {
     var _binding: FragmentContactInfoBinding? = null
     val binding get() = _binding!!
 
-    private val CALL_PHONE_REQUEST_CODE = 1
+    private lateinit var viewModel: ContactInfoViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentContactInfoBinding.inflate(inflater, container, false)
+        _binding = FragmentContactInfoBinding.inflate(inflater, container, false).apply {
+            viewModel = this@ContactInfoFragment.viewModel
+            lifecycleOwner = viewLifecycleOwner
+        }
 
         // get the contact id
         val contactId = ContactInfoFragmentArgs.fromBundle(requireArguments()).contactId
@@ -35,18 +37,18 @@ class ContactInfoFragment : Fragment() {
         // get dao
         val application = requireNotNull(this.activity).application
         val dao = ContactDatabase.getInstance(application).contactDao
-
         // get the view model
         val viewModelFactory = ContactInfoViewModelFactory(contactId, dao)
-        val viewModel = ViewModelProvider(
+        viewModel = ViewModelProvider(
             this, viewModelFactory
         )[ContactInfoViewModel::class.java]
 
+        setUpObservers(contactId)
 
-        // get ref
-        binding.viewModel = viewModel
-        binding.lifecycleOwner = viewLifecycleOwner //for data binding
+        return binding.root
+    }
 
+    private fun setUpObservers(contactId: Long) {
         // navigate to list
         viewModel.navigateToList.observe(viewLifecycleOwner, Observer { navigate ->
             if (navigate) {
@@ -77,10 +79,6 @@ class ContactInfoFragment : Fragment() {
             Toast.makeText(requireContext(), "Make call", Toast.LENGTH_SHORT).show()
 
         }
-
-        return binding.root
     }
-
-
 
 }

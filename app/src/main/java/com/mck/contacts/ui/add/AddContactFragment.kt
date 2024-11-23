@@ -13,10 +13,12 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.mck.contacts.R
 import com.mck.contacts.databinding.FragmentAddContactBinding
 import com.mck.contacts.model.ContactDatabase
+import kotlinx.coroutines.launch
 
 class AddContactFragment : Fragment() {
 
@@ -43,9 +45,50 @@ class AddContactFragment : Fragment() {
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
-            viewModel.newContactPicture.value = viewModel.saveImageToInternalStorage(requireContext(), uri)
+            viewModel.viewModelScope.launch {
+                val savedImagePath = viewModel.saveImageToInternalStorage(requireContext(), uri)
+                viewModel.newContactPicture.value = savedImagePath
+            }
+//            viewModel.newContactPicture.value = viewModel.saveImageToInternalStorage(requireContext(), uri)
         } else {
             Toast.makeText(requireContext(), "No image selected", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentAddContactBinding.inflate(inflater, container, false).apply {
+            viewModel = this@AddContactFragment.viewModel
+            lifecycleOwner = viewLifecycleOwner
+        }
+
+        setupObservers()
+
+        return binding.root
+    }
+
+    private fun setupObservers() {
+        // Observe the LiveData to trigger image picker
+        viewModel.openImagePickerEvent.observe(viewLifecycleOwner) { shouldOpen ->
+            if (shouldOpen) {
+                handleImageSelection()
+                viewModel.resetImagePickerEvent()
+            }
+        }
+
+        // Observe the LiveData for back event (save or back)
+        viewModel.navigateToContacts.observe(viewLifecycleOwner) { navigate ->
+            if (navigate) {
+                findNavController().navigate(R.id.action_addContactFragment_to_contactFragment)
+                viewModel.onNavigatedToContacts()
+            }
+        }
+
+        // Observe for valid input
+        viewModel.isInputValid.observe(viewLifecycleOwner) { isValid ->
+            binding.saveButton.isEnabled = isValid
         }
     }
 
@@ -66,40 +109,6 @@ class AddContactFragment : Fragment() {
             // Request permission
             requestPermissionLauncher.launch(permission)
         }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentAddContactBinding.inflate(inflater, container, false)
-
-        // set the view model for databinding
-        binding.viewModel = viewModel
-        binding.lifecycleOwner = viewLifecycleOwner
-
-        // Observe the LiveData to trigger image picker
-        viewModel.openImagePickerEvent.observe(viewLifecycleOwner) { shouldOpen ->
-            if (shouldOpen) {
-                handleImageSelection()
-                viewModel.resetImagePickerEvent()
-            }
-        }
-
-        // Observe the LiveData for back event (save or back)
-        viewModel.navigateToList.observe(viewLifecycleOwner) { navigate ->
-            if (navigate) {
-                findNavController().navigate(R.id.action_addContactFragment_to_contactFragment)
-                viewModel.onNavigatedToList()
-            }
-        }
-
-
-        viewModel.isInputValid.observe(viewLifecycleOwner) { isValid ->
-            binding.saveButton.isEnabled = isValid
-        }
-
-        return binding.root
     }
 
     override fun onDestroyView() {

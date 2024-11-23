@@ -63,6 +63,8 @@
                 android:textSize="32sp"
                 android:hint="Name"
                 android:inputType="textPersonName"
+                android:onTextChanged="@{()->viewModel.onInputChanged()}"
+
                 android:text="@={viewModel.newContactName}" />
 
             <!-- Phone Number Field -->
@@ -73,6 +75,8 @@
                 android:textSize="32sp"
                 android:hint="Phone Number"
                 android:inputType="phone"
+                android:onTextChanged="@{()->viewModel.onInputChanged()}"
+
                 android:text="@={viewModel.newContactNumber}" />
 
             <!-- Email Field -->
@@ -83,6 +87,8 @@
                 android:textSize="32sp"
                 android:hint="Email"
                 android:inputType="textEmailAddress"
+                android:onTextChanged="@{()->viewModel.onInputChanged()}"
+
                 android:text="@={viewModel.newContactEmail}" />
         </LinearLayout>
 
