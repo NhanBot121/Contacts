@@ -1,5 +1,6 @@
 package com.mck.contacts.ui.contacts
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,13 +14,19 @@ class ContactsViewModel(val dao: ContactDao) : ViewModel() {
     val contacts = dao.getAll()
 
     // will navigate to contact by id
-    private val _navigateToContact = MutableLiveData<Long?>()
+    private val _navigateToAdd = MutableLiveData<Boolean>(false)
+    val navigateToAdd: LiveData<Boolean>
+        get() = _navigateToAdd
+
+    // will navigate to contact by id
+    private val _navigateToInfo = MutableLiveData<Long?>()
     val navigateToContact: LiveData<Long?>
-        get() = _navigateToContact
+        get() = _navigateToInfo
 
     // LiveData for search results
     private val _searchResults = MutableLiveData<List<Contact>>()
-    val searchResults: LiveData<List<Contact>> get() = _searchResults
+    val searchResults: LiveData<List<Contact>>
+        get() = _searchResults
 
     fun searchContacts(query: String) {
         viewModelScope.launch {
@@ -30,12 +37,21 @@ class ContactsViewModel(val dao: ContactDao) : ViewModel() {
     }
 
     //
-    fun onContactClicked(id: Long) {
-        _navigateToContact.value = id
+    fun onInfoClicked(id: Long) {
+        _navigateToInfo.value = id
     }
 
-    fun onContactNavigated() {
-        _navigateToContact.value = null
+    fun onInfoNavigated() {
+        _navigateToInfo.value = null
+    }
+
+    fun onAddClick() {
+        _navigateToAdd.value = true
+        Log.d("ContactsViewModel", "onAddClick triggered")
+    }
+
+    fun onAddNavigated() {
+        _navigateToAdd.value = false
     }
 
 }

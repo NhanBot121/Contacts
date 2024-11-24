@@ -2,4 +2,8 @@
     <string name="app_name">Contacts</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="back">Back</string>
+    <string name="edit">Edit contact info</string>
+    <string name="call_contact">Call contact\n</string>
+    <string name="profile_picture">Profile Picture</string>
 </resources>

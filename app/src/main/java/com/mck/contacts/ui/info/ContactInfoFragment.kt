@@ -26,14 +26,8 @@ class ContactInfoFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentContactInfoBinding.inflate(inflater, container, false).apply {
-            viewModel = this@ContactInfoFragment.viewModel
-            lifecycleOwner = viewLifecycleOwner
-        }
-
         // get the contact id
         val contactId = ContactInfoFragmentArgs.fromBundle(requireArguments()).contactId
-
         // get dao
         val application = requireNotNull(this.activity).application
         val dao = ContactDatabase.getInstance(application).contactDao
@@ -43,6 +37,11 @@ class ContactInfoFragment : Fragment() {
             this, viewModelFactory
         )[ContactInfoViewModel::class.java]
 
+        _binding = FragmentContactInfoBinding.inflate(inflater, container, false).apply {
+            viewModel = this@ContactInfoFragment.viewModel
+            lifecycleOwner = viewLifecycleOwner
+        }
+
         setUpObservers(contactId)
 
         return binding.root
@@ -50,7 +49,7 @@ class ContactInfoFragment : Fragment() {
 
     private fun setUpObservers(contactId: Long) {
         // navigate to list
-        viewModel.navigateToList.observe(viewLifecycleOwner, Observer { navigate ->
+        viewModel.navigateToContacts.observe(viewLifecycleOwner, Observer { navigate ->
             if (navigate) {
                 findNavController()
                     .navigate(R.id.action_contactInfoFragment_to_contactFragment)
@@ -77,7 +76,6 @@ class ContactInfoFragment : Fragment() {
                 viewModel.onCallPhoneHandled() // Reset the event
             }
             Toast.makeText(requireContext(), "Make call", Toast.LENGTH_SHORT).show()
-
         }
     }
 

@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.mck.contacts.R
@@ -30,11 +29,14 @@ class ContactsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentContactBinding.inflate(inflater, container, false)
-
         setupViewModel()
+
+        _binding = FragmentContactBinding.inflate(inflater, container, false).apply {
+            viewModel = this@ContactsFragment.viewModel
+        }
+
         setupRecyclerView()
-        setupAddContactButton()
+
 
         return binding.root
     }
@@ -47,6 +49,7 @@ class ContactsFragment : Fragment() {
         (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
 
         setupObservers()
+
         setupMenu()
     }
 
@@ -59,7 +62,7 @@ class ContactsFragment : Fragment() {
 
     private fun setupRecyclerView() {
         adapter = ContactItemAdapter { contactId ->
-            viewModel.onContactClicked(contactId)
+            viewModel.onInfoClicked(contactId)
         }
         binding.contactList.adapter = adapter
     }
@@ -78,8 +81,15 @@ class ContactsFragment : Fragment() {
         // Observe navigation to contact info
         viewModel.navigateToContact.observe(viewLifecycleOwner) { contactId ->
             contactId?.let {
-                navigateToContactInfo(it)
-                viewModel.onContactNavigated()
+                navigateToInfo(it)
+                viewModel.onInfoNavigated()
+            }
+        }
+
+        viewModel.navigateToAdd.observe(viewLifecycleOwner) { navigate ->
+            if (navigate) {
+                navigateToAdd()
+                viewModel.onAddNavigated()
             }
         }
     }
@@ -112,15 +122,14 @@ class ContactsFragment : Fragment() {
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    private fun setupAddContactButton() {
-        binding.addFab.setOnClickListener {
-            findNavController().navigate(R.id.action_contactFragment_to_addContactFragment)
-        }
-    }
 
-    private fun navigateToContactInfo(contactId: Long) {
+    private fun navigateToInfo(contactId: Long) {
         val action = ContactsFragmentDirections.actionContactFragmentToContactInfoFragment(contactId)
         findNavController().navigate(action)
+    }
+
+    private fun navigateToAdd() {
+        findNavController().navigate(R.id.action_contactFragment_to_addContactFragment)
     }
 
     override fun onDestroyView() {
