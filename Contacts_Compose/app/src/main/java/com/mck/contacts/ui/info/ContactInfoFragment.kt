@@ -7,8 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
@@ -124,7 +122,7 @@ fun InfoFragmentContent(viewModel: ContactInfoViewModel) {
             // Name Field
             Text(
                 text = contact?.name.orEmpty(),
-                style = MaterialTheme.typography.h1.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.padding(vertical = 8.dp)
             )
 
@@ -150,7 +148,7 @@ fun InfoFragmentContent(viewModel: ContactInfoViewModel) {
                 modifier = Modifier
                     .size(56.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colors.secondary)
+                    .background(MaterialTheme.colorScheme.secondaryContainer)
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_call),
@@ -160,13 +158,21 @@ fun InfoFragmentContent(viewModel: ContactInfoViewModel) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Edit Button
-            Button(
-                onClick = { viewModel.onEditClick() },
-                modifier = Modifier.padding(top = 16.dp)
-            ) {
-                Text("Edit")
-            }
+
+        }
+
+        // Edit Button
+        IconButton(
+            onClick = { viewModel.onEditClick() },
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = 16.dp)
+                .size(40.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_edit),
+                contentDescription = "Edit"
+            )
         }
 
         // Back Button
@@ -215,7 +221,7 @@ fun ContactInfoRow(iconRes: Int, content: String) {
         )
         Text(
             text = content,
-            style = MaterialTheme.typography.body1,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.weight(1f)
         )
     }

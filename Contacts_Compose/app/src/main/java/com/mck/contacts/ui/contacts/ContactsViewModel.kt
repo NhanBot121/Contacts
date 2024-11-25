@@ -8,10 +8,50 @@ import androidx.lifecycle.viewModelScope
 import com.mck.contacts.model.Contact
 import com.mck.contacts.model.ContactDao
 import kotlinx.coroutines.launch
+import androidx.lifecycle.*
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+
+
 
 class ContactsViewModel(val dao: ContactDao) : ViewModel() {
+
     // get all contacts in database to display
-    val contacts = dao.getAll()
+    val allContacts : LiveData<List<Contact>> = dao.getAll()
+
+//    private val _contacts = MutableLiveData<List<Contact>>(contactsRoom.value ?: emptyList())
+//    val contacts : LiveData<List<Contact>>
+//        get() = _contacts
+
+    // MutableStateFlow to store the filtered contacts for LazyList
+    private val _filteredContacts = MutableStateFlow<List<Contact>>(emptyList())
+    val filteredContacts: StateFlow<List<Contact>> = _filteredContacts
+
+    init {
+        // Initialize with all contacts when ViewModel is created
+        allContacts.observeForever { contacts ->
+            _filteredContacts.value = contacts ?: emptyList()
+        }
+    }
+
+    fun searchContacts(query: String) {
+        viewModelScope.launch {
+            if (query.isEmpty()) {
+                // Reset to all contacts if search query is empty
+                _filteredContacts.value = allContacts.value ?: emptyList()
+            } else {
+                // Perform a search with the query
+                dao.search("%$query%").observeForever { results ->
+                    _filteredContacts.value = results ?: emptyList()
+                }
+            }
+        }
+    }
+
+//    fun displaySearchResults() {
+//        _contacts.value = _searchResults.value ?: emptyList()
+//    }
+
 
     // will navigate to contact by id
     private val _navigateToAdd = MutableLiveData<Boolean>(false)
@@ -28,15 +68,6 @@ class ContactsViewModel(val dao: ContactDao) : ViewModel() {
     val searchResults: LiveData<List<Contact>>
         get() = _searchResults
 
-    fun searchContacts(query: String) {
-        viewModelScope.launch {
-            dao.search("%$query%").observeForever { results ->
-                _searchResults.postValue(results)
-            }
-        }
-    }
-
-    //
     fun onInfoClicked(id: Long) {
         _navigateToInfo.value = id
     }

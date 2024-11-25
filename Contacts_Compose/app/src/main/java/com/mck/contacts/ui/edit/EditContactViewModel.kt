@@ -10,7 +10,6 @@ class EditContactViewModel(contactId: Long, dao: ContactDao) : BaseContactViewMo
 
     val contact = dao.get(contactId)
 
-
     fun onInfoUpdated() {
         validateInputs(
             contact.value?.name.orEmpty(),
