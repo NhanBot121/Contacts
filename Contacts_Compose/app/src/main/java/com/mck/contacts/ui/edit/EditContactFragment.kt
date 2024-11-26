@@ -42,7 +42,7 @@ class EditContactFragment : Fragment() {
         if (uri != null) {
             viewModel.viewModelScope.launch {
                 val savedImagePath = viewModel.saveImageToInternalStorage(requireContext(), uri)
-                viewModel.updatePicture(savedImagePath)
+                viewModel.update.updatePicture(savedImagePath)
             }
         }
     }
@@ -135,11 +135,11 @@ fun EditFragmentContent(viewModel: EditContactViewModel) {
             // Edit Contact Fields
             ContactEditFields(
                 name = contact?.name.orEmpty(),
-                onNameChange = { viewModel.updateName(it) },
+                onNameChange = { viewModel.update.updateName(it) },
                 phone = contact?.number.orEmpty(),
-                onPhoneChange = { viewModel.updateNumber(it) },
+                onPhoneChange = { viewModel.update.updateNumber(it) },
                 email = contact?.email.orEmpty(),
-                onEmailChange = { viewModel.updateEmail(it) }
+                onEmailChange = { viewModel.update.updateEmail(it) }
             )
 
             Spacer(modifier = Modifier.height(16.dp))

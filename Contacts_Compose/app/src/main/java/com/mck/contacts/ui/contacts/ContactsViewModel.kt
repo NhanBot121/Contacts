@@ -44,7 +44,6 @@ class ContactsViewModel(val dao: ContactDao) : ViewModel() {
         }
     }
 
-
     // will navigate to contact by id
     private val _navigateToAdd = MutableLiveData<Boolean>(false)
     val navigateToAdd: LiveData<Boolean>

@@ -65,4 +65,24 @@ open class BaseContactViewModel(val dao: ContactDao) : ViewModel() {
         }
     }
 
+    class updateContact(val contact: MutableLiveData<Contact>) {
+
+        // Update the editable state
+        fun updateName(name: String) {
+            contact.value = contact.value?.copy(name = name)
+        }
+
+        fun updateNumber(number: String) {
+            contact.value = contact.value?.copy(number = number)
+        }
+
+        fun updateEmail(email: String) {
+            contact.value = contact.value?.copy(email = email)
+        }
+
+        fun updatePicture(picture: String) {
+            contact.value = contact.value?.copy(picture = picture)
+        }
+    }
+
 }

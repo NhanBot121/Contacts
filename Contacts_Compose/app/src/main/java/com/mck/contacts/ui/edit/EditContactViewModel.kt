@@ -23,22 +23,7 @@ class EditContactViewModel(contactId: Long, dao: ContactDao) : BaseContactViewMo
         }
     }
 
-    // Update the editable state
-    fun updateName(name: String) {
-        _editableContact.value = _editableContact.value?.copy(name = name)
-    }
-
-    fun updateNumber(number: String) {
-        _editableContact.value = _editableContact.value?.copy(number = number)
-    }
-
-    fun updateEmail(email: String) {
-        _editableContact.value = _editableContact.value?.copy(email = email)
-    }
-
-    fun updatePicture(savedImagePath: String) {
-        _editableContact.value = _editableContact.value?.copy(picture = savedImagePath)
-    }
+    val update = updateContact(_editableContact)
 
     fun onSaveClick() {
         viewModelScope.launch {

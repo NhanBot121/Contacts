@@ -38,6 +38,8 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import androidx.compose.foundation.Image
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.res.painterResource
+import com.mck.contacts.model.Contact
 
 
 class AddContactFragment : Fragment() {
@@ -64,7 +66,7 @@ class AddContactFragment : Fragment() {
         if (uri != null) {
             viewModel.viewModelScope.launch {
                 val savedImagePath = viewModel.saveImageToInternalStorage(requireContext(), uri)
-                viewModel.newContact.value?.picture = savedImagePath
+                viewModel.update.updatePicture(savedImagePath)
             }
         } else {
             Toast.makeText(requireContext(), "No image selected", Toast.LENGTH_SHORT).show()
@@ -131,29 +133,20 @@ class AddContactFragment : Fragment() {
 fun AddFragmentContent(viewModel: AddContactViewModel) {
 //    val newContact by viewModel.newContact.observeAsState("")
 
+    val newContact by viewModel.newContact.observeAsState()
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Save and Back Buttons
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(onClick = { viewModel.onBackClick() }) {
-                Text("Back")
-            }
-            Button(onClick = { viewModel.onSaveClick() }) {
-                Text("Save")
-            }
-        }
+
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Profile Picture
-            ProfilePicture(imageUri = "imageUri", onAddPictureClick = {
+            ProfilePicture(imageUri = newContact?.picture, onAddPictureClick = {
                 viewModel.onAddPictureClick()
             })
 
@@ -161,16 +154,44 @@ fun AddFragmentContent(viewModel: AddContactViewModel) {
 
             // Fields for name, phone, and email
             ContactFields(
-                name = "",
-                onNameChange = { viewModel.newContact.value?.name = it },
-                phone = "",
-                onPhoneChange = { viewModel.newContact.value?.number = it },
-                email = "",
-                onEmailChange = { viewModel.newContact.value?.email = it }
+                name = newContact?.name.orEmpty(),
+                onNameChange = { viewModel.update.updateName(it) },
+                phone = newContact?.number.orEmpty(),
+                onPhoneChange = { viewModel.update.updateNumber(it) },
+                email = newContact?.email.orEmpty(),
+                onEmailChange = { viewModel.update.updateEmail(it) }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
+        }
+
+        // Save Button
+        IconButton(
+            onClick = { viewModel.onSaveClick() },
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = 16.dp)
+                .size(40.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_save),
+                contentDescription = "Edit"
+            )
+        }
+
+        // Cancel Button
+        IconButton(
+            onClick = { viewModel.onBackClick() },
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(16.dp)
+                .size(40.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_back),
+                contentDescription = "Back"
+            )
         }
     }
 }
