@@ -1,10 +1,12 @@
-package com.mck.contacts.ui.base
+package com.mck.contacts.ui.shared
 
 import android.content.Context
 import android.net.Uri
+import androidx.compose.runtime.MutableState
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.mck.contacts.model.Contact
 import com.mck.contacts.model.ContactDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -62,4 +64,5 @@ open class BaseContactViewModel(val dao: ContactDao) : ViewModel() {
             file.absolutePath
         }
     }
+
 }

@@ -19,10 +19,6 @@ class ContactsViewModel(val dao: ContactDao) : ViewModel() {
     // get all contacts in database to display
     val allContacts : LiveData<List<Contact>> = dao.getAll()
 
-//    private val _contacts = MutableLiveData<List<Contact>>(contactsRoom.value ?: emptyList())
-//    val contacts : LiveData<List<Contact>>
-//        get() = _contacts
-
     // MutableStateFlow to store the filtered contacts for LazyList
     private val _filteredContacts = MutableStateFlow<List<Contact>>(emptyList())
     val filteredContacts: StateFlow<List<Contact>> = _filteredContacts
@@ -47,10 +43,6 @@ class ContactsViewModel(val dao: ContactDao) : ViewModel() {
             }
         }
     }
-
-//    fun displaySearchResults() {
-//        _contacts.value = _searchResults.value ?: emptyList()
-//    }
 
 
     // will navigate to contact by id

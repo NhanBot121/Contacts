@@ -1,32 +1,22 @@
 package com.mck.contacts.ui.edit
 
-import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.mck.contacts.R
 import com.mck.contacts.model.ContactDatabase
-import com.mck.contacts.ui.add.AddContactViewModel
-import com.mck.contacts.ui.add.AddContactViewModelFactory
 import kotlinx.coroutines.launch
-import kotlin.getValue
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -39,6 +29,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 
 
 class EditContactFragment : Fragment() {
@@ -51,7 +42,7 @@ class EditContactFragment : Fragment() {
         if (uri != null) {
             viewModel.viewModelScope.launch {
                 val savedImagePath = viewModel.saveImageToInternalStorage(requireContext(), uri)
-                viewModel.updateContactPicture(savedImagePath)
+                viewModel.updatePicture(savedImagePath)
             }
         }
     }
@@ -116,25 +107,15 @@ class EditContactFragment : Fragment() {
 
 @Composable
 fun EditFragmentContent(viewModel: EditContactViewModel) {
-    val contact by viewModel.contact.observeAsState()
+    val contact by viewModel.editableContact.observeAsState()
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Save and Cancel Buttons
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Button(onClick = { viewModel.onCancelClick() }) {
-                Text("Cancel")
-            }
-            Button(onClick = { viewModel.onSaveClick() }) {
-                Text("Save")
-            }
-        }
+
+
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -154,11 +135,11 @@ fun EditFragmentContent(viewModel: EditContactViewModel) {
             // Edit Contact Fields
             ContactEditFields(
                 name = contact?.name.orEmpty(),
-                onNameChange = { viewModel.contact.value?.name = it },
+                onNameChange = { viewModel.updateName(it) },
                 phone = contact?.number.orEmpty(),
-                onPhoneChange = { viewModel.contact.value?.number = it },
+                onPhoneChange = { viewModel.updateNumber(it) },
                 email = contact?.email.orEmpty(),
-                onEmailChange = { viewModel.contact.value?.email = it }
+                onEmailChange = { viewModel.updateEmail(it) }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -178,6 +159,35 @@ fun EditFragmentContent(viewModel: EditContactViewModel) {
                     modifier = Modifier.size(40.dp)
                 )
             }
+        }
+
+
+        // Save Button
+        IconButton(
+            onClick = { viewModel.onSaveClick() },
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = 16.dp)
+                .size(40.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_save),
+                contentDescription = "Edit"
+            )
+        }
+
+        // Cancel Button
+        IconButton(
+            onClick = { viewModel.onCancelClick() },
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(16.dp)
+                .size(40.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_cancel),
+                contentDescription = "Back"
+            )
         }
     }
 }

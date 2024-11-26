@@ -64,7 +64,7 @@ class AddContactFragment : Fragment() {
         if (uri != null) {
             viewModel.viewModelScope.launch {
                 val savedImagePath = viewModel.saveImageToInternalStorage(requireContext(), uri)
-                viewModel.newContactPicture.value = savedImagePath
+                viewModel.newContact.value?.picture = savedImagePath
             }
         } else {
             Toast.makeText(requireContext(), "No image selected", Toast.LENGTH_SHORT).show()
@@ -129,10 +129,7 @@ class AddContactFragment : Fragment() {
 
 @Composable
 fun AddFragmentContent(viewModel: AddContactViewModel) {
-    val name by viewModel.newContactName.observeAsState("")
-    val phone by viewModel.newContactNumber.observeAsState("")
-    val email by viewModel.newContactEmail.observeAsState("")
-    val imageUri by viewModel.newContactPicture.observeAsState(null)
+//    val newContact by viewModel.newContact.observeAsState("")
 
     Box(
         modifier = Modifier
@@ -156,7 +153,7 @@ fun AddFragmentContent(viewModel: AddContactViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Profile Picture
-            ProfilePicture(imageUri = imageUri, onAddPictureClick = {
+            ProfilePicture(imageUri = "imageUri", onAddPictureClick = {
                 viewModel.onAddPictureClick()
             })
 
@@ -164,12 +161,12 @@ fun AddFragmentContent(viewModel: AddContactViewModel) {
 
             // Fields for name, phone, and email
             ContactFields(
-                name = name,
-                onNameChange = { viewModel.newContactName.value = it },
-                phone = phone,
-                onPhoneChange = { viewModel.newContactNumber.value = it },
-                email = email,
-                onEmailChange = { viewModel.newContactEmail.value = it }
+                name = "",
+                onNameChange = { viewModel.newContact.value?.name = it },
+                phone = "",
+                onPhoneChange = { viewModel.newContact.value?.number = it },
+                email = "",
+                onEmailChange = { viewModel.newContact.value?.email = it }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
