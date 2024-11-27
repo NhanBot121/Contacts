@@ -1,4 +1,4 @@
-package com.mck.contacts.model
+package com.mck.contacts.data
 
 import android.content.Context
 import androidx.room.Database
